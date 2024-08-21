@@ -33,7 +33,7 @@ jobs:
       - name: Build, tag, and push image to ECR
         run: |
           IMAGE_TAG=${{ github.sha }}
-          docker buildx build --platform linux/arm64 -f Dockerfile -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/live-go-frontend:$IMAGE_TAG --push .
+          docker buildx build --no-cache --platform linux/arm64 -f Dockerfile -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/live-go-frontend:$IMAGE_TAG --push .
 
       - name: Download task definition //作ったタスク定義をDLする。githubに格納する必要がなくなる
         run: |

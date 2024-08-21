@@ -41,7 +41,7 @@ function App() {
         {/* 取得したデータを表示 */}
         {data ? (
           <div>
-            <h1>Todo-Item5:</h1>
+            <h1>Todo-Item7:</h1>
             <p>ID: {data.id}</p>
             <p>Title: {data.title}</p>
             <p>Completed: {data.completed ? 'Yes' : 'No'}</p>
