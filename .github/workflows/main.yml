@@ -1,15 +1,16 @@
 name: Deploy to ECS on Feature Branch
 
 on:
-    push:
-        branches: [ "feature/*" ]
+  push:
+    branches:
+      - "feature/*"
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     permissions:
-        id-token: write
-        contents: read
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -34,6 +35,10 @@ jobs:
         run: |
           IMAGE_TAG=${{ github.sha }}
           docker buildx build --no-cache --platform linux/arm64 -f Dockerfile -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/live-go-frontend:$IMAGE_TAG --push .
+
+      - name: Get Latest Image Tag
+        id: get_latest_image
+        run: echo "LATEST_IMAGE_TAG=$(aws ecr describe-images --repository-name live-go-backend --query 'sort_by(imageDetails,&imagePushedAt)[-1].imageTags[0]' --output text)" >> $GITHUB_ENV
 
       - name: Download task definition //作ったタスク定義をDLする。githubに格納する必要がなくなる
         run: |
