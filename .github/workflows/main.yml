@@ -33,7 +33,7 @@ jobs:
 
       - name: Build, tag, and push image to ECR
         run: |
-          IMAGE_TAG=${{ github.sha }}
+          IMAGE_TAG="latest"
           docker buildx build --no-cache --platform linux/arm64 -f Dockerfile -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/live-go-frontend:$IMAGE_TAG --push .
 
       - name: Get Latest Image Tag
