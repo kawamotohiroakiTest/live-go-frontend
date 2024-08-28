@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 
-import logo from './logo.svg';
-import './App.css';
-
-function App() {
+const Home = () => {
   const [data, setData] = useState<any>(null);
   const [todoId, setTodoId] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
 
   const fetchTodoData = (id: number) => {
-    const apiUrl = process.env.REACT_APP_API_URL_PREFIX;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL_PREFIX;
 
     if (!apiUrl) {
       console.error('API URL is not defined');
@@ -19,19 +17,19 @@ function App() {
     console.log('API URL:', getTodoApi);
 
     fetch(getTodoApi)
-      .then(response => {
+      .then((response) => {
         console.log('Response:', response);
         if (!response.ok) {
           throw new Error('Todo not found');
         }
         return response.json();
       })
-      .then(data => {
+      .then((data) => {
         console.log('Data:', data);
         setData(data);
         setError(null);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Error fetching data:', error);
         setError('このタスクIDは存在しません');
         setData(null);
@@ -58,9 +56,8 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.tsx</code> and save to reload.
+          Edit <code>pages/index.tsx</code> and save to reload.
         </p>
         <a
           className="App-link"
@@ -98,9 +95,16 @@ function App() {
         ) : (
           !error && <p>Loading...</p>
         )}
+
+        {/* 会員登録ページへのリンク */}
+        <p>
+          <Link href="/users/register">
+            Go to Register Page
+          </Link>
+        </p>
       </header>
     </div>
   );
-}
+};
 
-export default App;
+export default Home;
