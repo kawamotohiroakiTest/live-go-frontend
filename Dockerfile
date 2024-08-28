@@ -8,6 +8,6 @@ RUN npm install
 
 COPY . .
 
-RUN if [ "$ENV_MODE" = "production" ]; then npm run build; fi
+RUN npm run build
 
-CMD ["sh", "-c", "if [ \"$ENV_MODE\" = \"production\" ]; then npm start; else npm run dev; fi"]
+CMD ["npm", "start"]

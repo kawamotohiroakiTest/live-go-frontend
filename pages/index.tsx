@@ -90,7 +90,7 @@ const Home = () => {
             <h1>Todo-Item:</h1>
             <p>ID: {data.id}</p>
             <p>Title: {data.title}</p>
-            <p>Completed: {data.completed ? 'Yestest2' : 'No'}</p>
+            <p>Completed: {data.completed ? 'Yestest3' : 'No'}</p>
           </div>
         ) : (
           !error && <p>Loading...</p>
