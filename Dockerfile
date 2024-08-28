@@ -8,8 +8,6 @@ RUN npm install
 
 COPY . .
 
-# ビルドは本番環境でのみ実行
-RUN if [ "$NODE_ENV" = "production" ]; then npm run build; fi
+RUN if [ "$ENV_MODE" = "production" ]; then npm run build; fi
 
-# 環境変数によって異なるコマンドを実行
-CMD ["sh", "-c", "if [ \"$NODE_ENV\" = \"production\" ]; then npm start; else npm run dev; fi"]
+CMD ["sh", "-c", "if [ \"$ENV_MODE\" = \"production\" ]; then npm start; else npm run dev; fi"]
