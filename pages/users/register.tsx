@@ -11,10 +11,15 @@ const Register = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // バリデーション
     if (!name || !mail || !pass) {
       console.log('Validation error');
       setError('全てのフィールドを入力してください。');
+      return;
+    }
+
+    if (pass.length < 8) {
+      console.log('Password length error');
+      setError('パスワードは8文字以上にしてください。');
       return;
     }
 
