@@ -56,52 +56,60 @@ const HomeComponent = () => {
   };
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>Edit <code>pages/index.tsx</code> and save to reload.</p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+    <div className="min-h-screen bg-gradient-to-r from-blue-500 to-teal-500 flex items-center justify-center">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <header className="text-center">
+          <p className="text-gray-700 text-lg mb-4">Edit <code>pages/index.tsx</code> and save to reload.</p>
+          <a
+            className="text-blue-500 hover:underline"
+            href="https://reactjs.org"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Learn React
+          </a>
 
-        {/* Todo IDを入力するフォーム */}
-        <form onSubmit={handleSubmit}>
-          <label>
-            Enter Todo ID:
-            <input
-              type="number"
-              value={todoId}
-              onChange={handleInputChange}
-              min="1"
-            />
-          </label>
-        </form>
+          {/* Todo IDを入力するフォーム */}
+          <form onSubmit={handleSubmit} className="mt-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Enter Todo ID:
+              <input
+                type="number"
+                value={todoId}
+                onChange={handleInputChange}
+                min="1"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+            </label>
+            <button
+              type="submit"
+              className="mt-4 w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Fetch Todo
+            </button>
+          </form>
 
-        {/* エラーメッセージを表示 */}
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+          {/* エラーメッセージを表示 */}
+          {error && <p className="text-red-500 mt-2">{error}</p>}
 
-        {/* 取得したデータを表示 */}
-        {data ? (
-          <TodoItem data={data} />
-        ) : (
-          !error && <p>Loading...</p>
-        )}
-
-      </header>
+          {/* 取得したデータを表示 */}
+          {data ? (
+            <TodoItem data={data} />
+          ) : (
+            !error && <p className="text-gray-500 mt-4">Loading...</p>
+          )}
+        </header>
+      </div>
     </div>
   );
 };
 
 const TodoItem = ({ data }: { data: any }) => (
-  <div>
-    <h1>Todo-Item:</h1>
-    <p>ID: {data.id}</p>
-    <p>Title: {data.title}</p>
-    <p>Completed: {data.completed ? 'Yes' : 'No'}</p>
+  <div className="mt-6 p-4 bg-gray-50 rounded-md shadow-sm">
+    <h2 className="text-xl font-semibold text-gray-800">Todo-Item:</h2>
+    <p className="text-gray-600">ID: {data.id}</p>
+    <p className="text-gray-600">Title: {data.title}</p>
+    <p className="text-gray-600">Completed: {data.completed ? 'Yes' : 'No'}</p>
   </div>
 );
 
