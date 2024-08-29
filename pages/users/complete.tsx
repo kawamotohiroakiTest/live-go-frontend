@@ -1,8 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
 
 const Complete = () => {
   const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    // トークンがない場合はトップページへリダイレクト
+    if (!token) {
+      router.push('/');
+    }
+  }, [router]);
 
   const handleGoToTop = () => {
     router.push('/');
@@ -14,19 +23,21 @@ const Complete = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-lg text-center">
-        <h1 className="text-3xl font-bold mb-6 text-gray-800">登録が完了しました！</h1>
-        <p className="text-gray-700 mb-6">ご登録ありがとうございます。次のステップに進んでください。</p>
-        <div className="space-y-4">
+      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">登録完了</h1>
+        <p className="mb-4 text-center">ご登録が完了しました。</p>
+        <div>
           <button
             onClick={handleGoToTop}
-            className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-200"
+            className="w-full bg-blue-500 py-2 rounded-md hover:bg-blue-600 transition duration-200 z-20 relative"
           >
             TOPへ戻る
           </button>
+        </div>
+        <div className="mt-4">
           <button
             onClick={handleGoToMyPage}
-            className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition duration-200"
+            className="w-full bg-gray-500 py-2 rounded-md hover:bg-gray-600 transition duration-200 z-20 relative"
           >
             マイページへ進む
           </button>

@@ -40,6 +40,9 @@ const Register = () => {
         throw new Error(errorData.error || '登録に失敗しました。');
       }
 
+      const data = await response.json();
+      localStorage.setItem('token', data.token);  // JWTトークンをlocalStorageに保存
+
       // 成功時の処理
       router.push('/users/complete');
     } catch (error) {
