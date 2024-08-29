@@ -11,6 +11,11 @@ const MyPage = () => {
     const fetchUserData = async () => {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL_PREFIX || '';
       const token = localStorage.getItem('token');
+      if (!token) {
+        // トークンがない場合はログインページにリダイレクト
+        router.push('/users/login');
+        return;
+      }
   
       console.log('JWT Token:', token);
   
@@ -46,6 +51,10 @@ const MyPage = () => {
     fetchUserData();
   }, [router]);
 
+  const handleGoToTop = () => {
+    router.push('/');
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -66,6 +75,15 @@ const MyPage = () => {
         ) : (
           <p>User data not available</p>
         )}
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={handleGoToTop}
+            className="w-full bg-gray-500 py-2 rounded-md hover:bg-gray-600 transition duration-200 z-20 relative"
+          >
+            TOPへ戻る
+          </button>
+        </div>
       </div>
     </div>
   );

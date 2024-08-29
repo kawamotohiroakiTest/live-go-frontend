@@ -39,6 +39,10 @@ const Login = () => {
     }
 };
 
+const handleGoToTop = () => {
+  router.push('/');
+};
+
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
       <form onSubmit={handleSubmit} className="relative p-8 rounded-lg shadow-lg w-full max-w-md">
@@ -74,6 +78,17 @@ const Login = () => {
             ログイン
           </button>
         </div>
+
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={handleGoToTop}
+            className="w-full bg-gray-500 py-2 rounded-md hover:bg-gray-600 transition duration-200 z-20 relative"
+          >
+            TOPへ戻る
+          </button>
+        </div>
+
       </form>
     </div>
   );
