@@ -10,37 +10,34 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!mail || !pass) {
-      console.log('Validation error');
-      setError('メールアドレスとパスワードを入力してください。');
-      return;
-    }
-
     try {
-      // API呼び出し
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL_PREFIX || '';
-      const response = await fetch(`${apiUrl}/users/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ mail, pass }),
-      });
-      console.log(response);
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL_PREFIX || '';
+        const response = await fetch(`${apiUrl}/users/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ mail, pass }),
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'ログインに失敗しました。');
-      }
+        console.log("Response Object:", response); // レスポンス全体を確認
 
-      // ログイン成功時の処理
-      router.push('/');  // ログイン後にリダイレクト
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.log("Error Response Data:", errorData);
+            throw new Error(errorData.error || 'ログインに失敗しました。');
+        }
+
+        const data = await response.json();
+        console.log("Received JWT Token:", data.token); // トークンが正しく返されているか確認
+        localStorage.setItem('token', data.token);  // JWTトークンをlocalStorageに保存
+
+        router.push('/');  // ログイン後にリダイレクト
     } catch (error) {
-      console.error(error);
-      // エラー時の処理
-      setError(error.message || 'ログインに失敗しました。再試行してください。');
+        console.error("Error during login:", error);
+        setError(error.message || 'ログインに失敗しました。再試行してください。');
     }
-  };
+};
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">

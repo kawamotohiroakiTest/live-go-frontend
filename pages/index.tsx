@@ -18,10 +18,9 @@ const Home = () => {
       });
 
       if (response.ok) {
-        // If logout is successful, redirect to the home page
-        router.push('/');
+        localStorage.removeItem('token'); // JWTトークンを削除
+        router.push('/'); // トップページにリダイレクト
       } else {
-        // If there is an error, show the error message
         const data = await response.json();
         setError(data.message || 'Logout failed. Please try again.');
       }
@@ -48,6 +47,11 @@ const Home = () => {
         <a href="#" onClick={handleLogout}>
           Logout
         </a>
+      </p>
+      <p>
+        <Link href="/users/mypage">
+          Go to My Page
+        </Link>
       </p>
       {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>
