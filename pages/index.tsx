@@ -56,6 +56,11 @@ const Home = () => {
       ) : (
         <>
           <p>
+            <Link href="/videoupload/upload">
+              Go to Image Upload Page
+            </Link>
+          </p>
+          <p>
             <Link href="/users/mypage">
               Go to My Page
             </Link>
