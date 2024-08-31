@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import HomeComponent from '../src/components/HomeComponent';
+import VideoHubComponent from '../src/components/VideoHubComponent';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
@@ -39,7 +39,7 @@ const Home = () => {
 
   return (
     <div>
-      <HomeComponent />
+      <VideoHubComponent />
       {!isLoggedIn ? (
         <>
           <p>
