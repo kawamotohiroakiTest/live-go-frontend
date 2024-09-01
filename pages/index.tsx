@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import HomeComponent from '../src/components/HomeComponent';
+import VideoHubComponent from '../src/components/VideoHubComponent';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
@@ -39,40 +39,42 @@ const Home = () => {
 
   return (
     <div>
-      <HomeComponent />
-      {!isLoggedIn ? (
-        <>
-          <p>
-            <Link href="/users/register">
-              Go to Register Page
-            </Link>
-          </p>
-          <p>
-            <Link href="/users/login">
-              Go to Login Page
-            </Link>
-          </p>
-        </>
-      ) : (
-        <>
-          <p>
-            <Link href="/videoupload/upload">
-              Go to Image Upload Page
-            </Link>
-          </p>
-          <p>
-            <Link href="/users/mypage">
-              Go to My Page
-            </Link>
-          </p>
-          <p>
-            <a href="#" onClick={handleLogout}>
-              Logout
-            </a>
-          </p>
-        </>
-      )}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <VideoHubComponent />
+      <footer className="mt-auto p-4 bg-gray-200 text-center">
+        {!isLoggedIn ? (
+          <>
+            <p className="mb-2">
+              <Link href="/users/register" className="text-blue-500 hover:underline">
+                登録ページへ
+              </Link>
+            </p>
+            <p className="mb-2">
+              <Link href="/users/login" className="text-blue-500 hover:underline">
+                ログインページへ
+              </Link>
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="mb-2">
+              <Link href="/videoupload/upload" className="text-blue-500 hover:underline">
+                画像アップロードページへ
+              </Link>
+            </p>
+            <p className="mb-2">
+              <Link href="/users/mypage" className="text-blue-500 hover:underline">
+                マイページへ
+              </Link>
+            </p>
+            <p className="mb-2">
+              <span onClick={handleLogout} className="text-red-500 hover:underline cursor-pointer">
+                ログアウト
+              </span>
+            </p>
+          </>
+        )}
+        {error && <p className="text-red-500">{error}</p>}
+      </footer>
     </div>
   );
 };

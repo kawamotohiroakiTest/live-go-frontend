@@ -40,10 +40,7 @@ const Upload = () => {
   };
 
   const handleUpload = async () => {
-    if (!thumbnail) {
-      setError('サムネイルを選択してください。');
-      return;
-    }
+
 
     if (!file) {
       setError('動画ファイルを選択してください。');
@@ -53,7 +50,6 @@ const Upload = () => {
     setIsUploading(true);  // アップロード開始
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('thumbnail', thumbnail); // サムネイルをフォームデータに追加
     formData.append('title', title);
     formData.append('description', description);
 
@@ -95,13 +91,13 @@ const Upload = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-lg">
+      <div className="bg-white p-8 rounded-lg shadow-md w-1/2 max-w-lg">
         <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">ファイルアップロード</h1>
 
         {error && <p style={{ color: 'red' }}>{error}</p>}
         {message && <p style={{ color: 'green' }}>{message}</p>}
 
-        <div className="mb-4">
+        <div className="mb-4 text-center">
           <input
             type="text"
             placeholder="タイトルを入力してください"
@@ -109,21 +105,13 @@ const Upload = () => {
             onChange={handleTitleChange}
             className="block w-full p-2 mb-4 border rounded"
           />
+        </div>
+        <div className="mb-4">
           <textarea
             placeholder="説明を入力してください"
             value={description}
             onChange={handleDescriptionChange}
             className="block w-full p-2 mb-4 border rounded"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block mb-2 font-semibold text-gray-700">サムネイルを選択</label>
-          <input
-            type="file"
-            onChange={handleThumbnailChange}
-            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-700 hover:file:bg-yellow-100"
-            disabled={isUploading}  // アップロード中は無効化
           />
         </div>
 
