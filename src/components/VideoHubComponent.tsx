@@ -47,7 +47,6 @@ const VideoHubComponent = () => {
                 <p className="text-gray-600">{video.Description}</p>
                 {video.Files && video.Files[0] && (
                   <>
-                    {/* <img src={video.Files[0].ThumbnailPath} alt={video.Title} className="mt-2 rounded-lg" /> */}
                     <video controls className="mt-2 w-full rounded-lg">
                       <source src={video.Files[0].FilePath} type="video/mp4" />
                       Your browser does not support the video tag.
