@@ -91,13 +91,13 @@ const Upload = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-lg">
+      <div className="bg-white p-8 rounded-lg shadow-md w-1/2 max-w-lg">
         <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">ファイルアップロード</h1>
 
         {error && <p style={{ color: 'red' }}>{error}</p>}
         {message && <p style={{ color: 'green' }}>{message}</p>}
 
-        <div className="mb-4">
+        <div className="mb-4 text-center">
           <input
             type="text"
             placeholder="タイトルを入力してください"
@@ -105,6 +105,8 @@ const Upload = () => {
             onChange={handleTitleChange}
             className="block w-full p-2 mb-4 border rounded"
           />
+        </div>
+        <div className="mb-4">
           <textarea
             placeholder="説明を入力してください"
             value={description}

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 const fetchVideos = async (apiUrl: string): Promise<any[]> => {
   try {
@@ -40,22 +41,31 @@ const VideoHubComponent = () => {
 
           {error && <p className="text-red-500 mt-2">{error}</p>}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {videos.map((video, index) => (
-              <div key={index} className="block bg-gray-100 p-4 rounded-lg shadow hover:bg-gray-200">
-                <h2 className="text-lg font-semibold text-gray-800">{video.Title}</h2>
-                <p className="text-gray-600">{video.Description}</p>
-                {video.Files && video.Files[0] && (
-                  <>
+          {videos.length === 0 ? (
+            <div className="text-center">
+              <p className="text-gray-700">動画がアップロードされていません。</p>
+              <Link href="/videoupload/upload">
+                <span className="mt-4 inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 cursor-pointer">
+                  動画をアップロードする
+                </span>
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {videos.map((video, index) => (
+                <div key={index} className="block bg-gray-100 p-4 rounded-lg shadow hover:bg-gray-200">
+                  <h2 className="text-lg font-semibold text-gray-800">{video.Title}</h2>
+                  <p className="text-gray-600">{video.Description}</p>
+                  {video.Files && video.Files[0] && (
                     <video controls className="mt-2 w-full rounded-lg">
                       <source src={video.Files[0].FilePath} type="video/mp4" />
                       Your browser does not support the video tag.
                     </video>
-                  </>
-                )}
-              </div>
-            ))}
-          </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </header>
       </div>
     </div>
