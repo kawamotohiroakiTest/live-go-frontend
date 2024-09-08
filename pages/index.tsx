@@ -10,7 +10,7 @@ const Home = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token); // トークンがあればログイン状態とみなす
+    setIsLoggedIn(!!token);
   }, []);
 
   const handleLogout = async () => {
@@ -24,9 +24,9 @@ const Home = () => {
       });
 
       if (response.ok) {
-        localStorage.removeItem('token'); // JWTトークンを削除
-        setIsLoggedIn(false); // ログアウト後はログイン状態を解除
-        router.push('/'); // トップページにリダイレクト
+        localStorage.removeItem('token');
+        setIsLoggedIn(false);
+        router.push('/');
       } else {
         const data = await response.json();
         setError(data.message || 'Logout failed. Please try again.');
