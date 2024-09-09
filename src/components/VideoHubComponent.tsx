@@ -4,6 +4,7 @@ import Link from 'next/link';
 const fetchVideos = async (apiUrl: string): Promise<any[]> => {
   try {
     const response = await fetch(`${apiUrl}/videos/list`);
+    console.log("fetchvideoResponse:", response);
     if (!response.ok) {
       throw new Error('Failed to fetch videos');
     }
@@ -17,10 +18,19 @@ const fetchVideos = async (apiUrl: string): Promise<any[]> => {
 const VideoHubComponent = () => {
   const [videos, setVideos] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);  // user_idを管理するstateを追加
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL_PREFIX || '';
 
   useEffect(() => {
+    // ローカルストレージからuser_idを取得
+    const storedUserId = localStorage.getItem('user_id');
+    if (storedUserId) {
+      setUserId(storedUserId);
+    } else {
+      setError('ユーザーがログインしていません');
+    }
+
     fetchVideos(apiUrl)
       .then((videos) => {
         console.log("Fetched videos:", videos);
@@ -32,6 +42,42 @@ const VideoHubComponent = () => {
         setVideos([]);
       });
   }, [apiUrl]);
+
+  // 動画が再生された時に呼ばれる関数
+  const handlePlay = async (videoId: string) => {
+    if (!userId) {
+      console.log('ユーザーIDがありません');
+      return;
+    }
+
+    const payload = {
+      user_id: Number(userId),
+      video_id: videoId,
+      event_type: 'play',
+      event_value: null,
+    };
+
+    // 送信するデータをログに出力
+    console.log("Sending payload:", payload);
+
+    try {
+      const response = await fetch(`${apiUrl}/videos/create_user_video_interactions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        console.log('Video play interaction saved successfully');
+      } else {
+        console.error('Failed to save interaction');
+      }
+    } catch (err) {
+      console.error('Error saving play interaction:', err);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-500 to-teal-500 flex items-center justify-center">
@@ -57,7 +103,11 @@ const VideoHubComponent = () => {
                   <h2 className="text-lg font-semibold text-gray-800">{video.Title}</h2>
                   <p className="text-gray-600">{video.Description}</p>
                   {video.Files && video.Files[0] && (
-                    <video controls className="mt-2 w-full rounded-lg">
+                    <video
+                      controls
+                      className="mt-2 w-full rounded-lg"
+                      onPlay={() => handlePlay(video.ID)}
+                    >
                       <source src={video.Files[0].FilePath} type="video/mp4" />
                       Your browser does not support the video tag.
                     </video>
