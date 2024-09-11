@@ -42,7 +42,7 @@ const Home = () => {
   const fetchRecommendations = async () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL_PREFIX || '';
     try {
-      const response = await fetch(`http://localhost:5001/recommendations/user_61`, {
+      const response = await fetch(`http://localhost:5001/recommendations/user_20`, {
       // const response = await fetch(`${apiUrl}/recommend/recommend?user_id=user_61"`, {
         method: 'GET',
         headers: {
