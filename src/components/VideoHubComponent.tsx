@@ -19,7 +19,9 @@ const fetchVideos = async (apiUrl: string): Promise<any[]> => {
 const VideoHubComponent = () => {
   const [videos, setVideos] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);  // user_idを管理するstateを追加
+  const [userId, setUserId] = useState<string | null>(null);
+  const [recommendations, setRecommendations] = useState([]);
+
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL_PREFIX || '';
 
@@ -80,6 +82,32 @@ const VideoHubComponent = () => {
     }
   };
 
+  const fetchRecommendations = async () => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL_PREFIX || '';
+    try {
+      const response = await fetch(`http://localhost:5001/recommendations/user_1`, {
+      // const response = await fetch(`${apiUrl}/recommend/recommend?user_id=user_61"`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);  // パースされたJSONデータを出力
+        setRecommendations(data);
+      } else {
+        const data = await response.json();
+        setError(data.message || 'Failed to fetch recommendations. Please try again.');
+      }
+    } catch (err) {
+      console.error('Fetch recommendations error:', err);
+      setError('Failed to fetch recommendations. Please try again.');
+    }
+  };
+
+
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-500 to-teal-500 flex items-center justify-center">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl">
@@ -115,6 +143,14 @@ const VideoHubComponent = () => {
                   )}
                 </div>
               ))}
+              <div className="mb-2">
+                <button
+                  onClick={fetchRecommendations}
+                  className="bg-yellow-500 text-white font-bold py-2 px-4 rounded-full border border-yellow-600 shadow-lg hover:bg-yellow-600 hover:border-yellow-700 transition duration-300"
+                >
+                  あなたへのおすすめ動画
+                </button>
+              </div>
             </div>
           )}
         </header>
