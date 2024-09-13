@@ -20,8 +20,7 @@ const VideoHubComponent = () => {
   const [videos, setVideos] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
-  const [recommendations, setRecommendations] = useState([]);
-
+  const [recommendations, setRecommendations] = useState<any[]>([]);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL_PREFIX || '';
 
@@ -83,20 +82,38 @@ const VideoHubComponent = () => {
   };
 
   const fetchRecommendations = async () => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL_PREFIX || '';
+    const storedUserId = localStorage.getItem('user_id');
+  
     try {
-      const response = await fetch(`http://localhost:5001/recommendations/user_1`, {
-      // const response = await fetch(`${apiUrl}/recommend/recommend?user_id=user_61"`, {
+      // まずはおすすめ動画のIDリストを取得
+      const response = await fetch(`http://localhost:5001/recommendations/user_${storedUserId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
-
+  
       if (response.ok) {
-        const data = await response.json();
-        console.log(data);  // パースされたJSONデータを出力
-        setRecommendations(data);
+        const data: { itemId: string }[] = await response.json();
+        const videoIds = data.map((item) => item.itemId);
+  
+        // 次に、そのIDリストに基づいて動画情報を取得
+        const videoResponse = await fetch(`${apiUrl}/videos/get_videos_by_ids`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ videoIds }),
+        });
+  
+        if (videoResponse.ok) {
+          const videoData = await videoResponse.json();
+          console.log(videoData); // パースされた動画情報を出力
+          setRecommendations(videoData); // 動画情報を保存
+        } else {
+          const videoData = await videoResponse.json();
+          setError(videoData.message || 'Failed to fetch videos. Please try again.');
+        }
       } else {
         const data = await response.json();
         setError(data.message || 'Failed to fetch recommendations. Please try again.');
@@ -106,7 +123,6 @@ const VideoHubComponent = () => {
       setError('Failed to fetch recommendations. Please try again.');
     }
   };
-
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-500 to-teal-500 flex items-center justify-center">
@@ -143,13 +159,39 @@ const VideoHubComponent = () => {
                   )}
                 </div>
               ))}
-              <div className="mb-2">
-                <button
-                  onClick={fetchRecommendations}
-                  className="bg-yellow-500 text-white font-bold py-2 px-4 rounded-full border border-yellow-600 shadow-lg hover:bg-yellow-600 hover:border-yellow-700 transition duration-300"
-                >
-                  あなたへのおすすめ動画
-                </button>
+            </div>
+          )}
+
+          <div className="mt-4">
+            <button
+              onClick={fetchRecommendations}
+              className="bg-yellow-500 text-white font-bold py-2 px-4 rounded-full border border-yellow-600 shadow-lg hover:bg-yellow-600 hover:border-yellow-700 transition duration-300"
+            >
+              あなたへのおすすめ動画
+            </button>
+          </div>
+
+          {/* おすすめ動画の表示 */}
+          {recommendations.length > 0 && (
+            <div className="mt-8">
+              <h2 className="text-xl font-bold text-gray-700 mb-4">あなたへのおすすめ動画</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {recommendations.map((video, index) => (
+                  <div key={index} className="block bg-gray-100 p-4 rounded-lg shadow hover:bg-gray-200">
+                    <h2 className="text-lg font-semibold text-gray-800">{video.Title}</h2>
+                    <p className="text-gray-600">{video.Description}</p>
+                    {video.Files && video.Files[0] && (
+                      <video
+                        controls
+                        className="mt-2 w-full rounded-lg"
+                        onPlay={() => handlePlay(video.ID)}
+                      >
+                        <source src={video.Files[0].FilePath} type="video/mp4" />
+                        Your browser does not support the video tag.
+                      </video>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
           )}
