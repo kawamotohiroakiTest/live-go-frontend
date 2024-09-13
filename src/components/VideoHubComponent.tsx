@@ -86,12 +86,14 @@ const VideoHubComponent = () => {
   
     try {
       // まずはおすすめ動画のIDリストを取得
-      const response = await fetch(`http://localhost:5001/recommendations/user_${storedUserId}`, {
+      //ローカルだとhttp://localhost:5001/
+      const response = await fetch(`${apiUrl}/videos/recommendations/user_${storedUserId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
+      console.log("Response:", response);
   
       if (response.ok) {
         const data: { itemId: string }[] = await response.json();
