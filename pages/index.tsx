@@ -25,6 +25,7 @@ const Home = () => {
 
       if (response.ok) {
         localStorage.removeItem('token');
+        localStorage.removeItem('user_id');
         setIsLoggedIn(false);
         router.push('/');
       } else {
@@ -36,6 +37,7 @@ const Home = () => {
       setError('Logout failed. Please try again.');
     }
   };
+
 
   return (
     <div>

@@ -3,12 +3,16 @@ import { useRouter } from 'next/router';
 
 const Upload = () => {
   const [file, setFile] = useState<File | null>(null);
-  const [thumbnail, setThumbnail] = useState<File | null>(null); // サムネイルの状態を管理
   const [title, setTitle] = useState<string>(''); // タイトルの状態を管理
   const [description, setDescription] = useState<string>(''); // 説明の状態を管理
+  const [genre, setGenre] = useState<string>(''); // ジャンルの状態を管理
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [titleError, setTitleError] = useState<string | null>(null); // タイトルのエラーメッセージ
+  const [descriptionError, setDescriptionError] = useState<string | null>(null); // 説明のエラーメッセージ
+  const [genreError, setGenreError] = useState<string | null>(null); // ジャンルのエラーメッセージ
+  const [fileError, setFileError] = useState<string | null>(null); // ファイルのエラーメッセージ
   const [isUploading, setIsUploading] = useState(false);  // アップロード中の状態を管理
   const router = useRouter();
 
@@ -24,23 +28,55 @@ const Upload = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files ? e.target.files[0] : null;
     setFile(selectedFile);
+    setFile(selectedFile);
+    if (selectedFile) {
+      setFileError(null);  // ファイル選択でエラー解除
+    }
   };
 
-  const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedThumbnail = e.target.files ? e.target.files[0] : null;
-    setThumbnail(selectedThumbnail);
-  };
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
+    setTitle(e.target.value);
+    if (e.target.value) {
+      setTitleError(null);  // タイトル入力でエラー解除
+    }
+
   };
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setDescription(e.target.value);
+    if (e.target.value) {
+      setDescriptionError(null);  // 説明入力でエラー解除
+    }
+  };
+
+  const handleGenreChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setGenre(e.target.value); // ジャンルの状態を更新
+    if (e.target.value) {
+      setGenreError(null);  // ジャンル選択でエラー解除
+    }
   };
 
   const handleUpload = async () => {
+    let hasError = false;
 
+    if (!title) {
+      setTitleError('タイトルを入力してください');
+      hasError = true;
+    }
+    if (!description) {
+      setDescriptionError('説明を入力してください');
+      hasError = true;
+    }
+    if (!genre) {
+      setGenreError('ジャンルを選択してください');
+      hasError = true;
+    }
+    if (!file) {
+      setFileError('動画ファイルを選択してください');
+      hasError = true;
+    }
 
     if (!file) {
       setError('動画ファイルを選択してください。');
@@ -52,6 +88,7 @@ const Upload = () => {
     formData.append('file', file);
     formData.append('title', title);
     formData.append('description', description);
+    formData.append('genre', genre);
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL_PREFIX || '';
@@ -94,25 +131,50 @@ const Upload = () => {
       <div className="bg-white p-8 rounded-lg shadow-md w-1/2 max-w-lg">
         <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">ファイルアップロード</h1>
 
-        {error && <p style={{ color: 'red' }}>{error}</p>}
         {message && <p style={{ color: 'green' }}>{message}</p>}
 
-        <div className="mb-4 text-center">
+        <div className="mb-4">
           <input
             type="text"
             placeholder="タイトルを入力してください"
             value={title}
             onChange={handleTitleChange}
-            className="block w-full p-2 mb-4 border rounded"
+            className="block w-full p-2 mb-1 border rounded"
           />
+          {titleError && <p style={{ color: 'red' }}>{titleError}</p>}
         </div>
+
         <div className="mb-4">
           <textarea
             placeholder="説明を入力してください"
             value={description}
             onChange={handleDescriptionChange}
-            className="block w-full p-2 mb-4 border rounded"
+            className="block w-full p-2 mb-1 border rounded"
           />
+          {descriptionError && <p style={{ color: 'red' }}>{descriptionError}</p>}
+        </div>
+
+        <div className="mb-4">
+          <label className="block mb-2 font-semibold text-gray-700">ジャンルを選択</label>
+          <select
+            value={genre}
+            onChange={handleGenreChange}
+            className="block w-full p-2 border rounded"
+          >
+            <option value="">ジャンルを選択</option>
+            <option value="Action">アクション</option>
+            <option value="Comedy">コメディ</option>
+            <option value="Documentary">ドキュメンタリー</option>
+            <option value="Drama">ドラマ</option>
+            <option value="Horror">ホラー</option>
+            <option value="Sci-Fi">SF</option>
+            <option value="Anime">アニメ</option>
+            <option value="Music">音楽</option>
+            <option value="Sports">スポーツ</option>
+            <option value="News">ニュース</option>
+            <option value="Other">その他</option>
+          </select>
+          {genreError && <p style={{ color: 'red' }}>{genreError}</p>}
         </div>
 
         <div className="mb-4">
@@ -121,9 +183,11 @@ const Upload = () => {
             type="file"
             onChange={handleFileChange}
             className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-            disabled={isUploading}  // アップロード中は無効化
+            disabled={isUploading}
           />
+          {fileError && <p style={{ color: 'red' }}>{fileError}</p>}
         </div>
+
 
         <div>
           <button

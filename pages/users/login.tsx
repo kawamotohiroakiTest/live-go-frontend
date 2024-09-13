@@ -29,8 +29,10 @@ const Login = () => {
         }
 
         const data = await response.json();
-        console.log("Received JWT Token:", data.token); // トークンが正しく返されているか確認
-        localStorage.setItem('token', data.token);  // JWTトークンをlocalStorageに保存
+        console.log("Received JWT Token:", data.token);
+        console.log("Received User ID:", data.user_id);
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user_id', data.user_id);
 
         router.push('/');  // ログイン後にリダイレクト
     } catch (error) {
