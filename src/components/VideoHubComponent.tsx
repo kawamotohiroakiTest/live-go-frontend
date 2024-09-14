@@ -9,7 +9,7 @@ const fetchVideos = async (apiUrl: string): Promise<any[]> => {
       throw new Error('Failed to fetch videos');
     }
     const data = await response.json();
-    return data.slice(0, 20);
+    return data.slice(0, 10);
   } catch (error) {
     console.error('Error fetching videos:', error);
     throw error;
@@ -23,6 +23,7 @@ const VideoHubComponent = () => {
   const [recommendations, setRecommendations] = useState<any[]>([]);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL_PREFIX || '';
+  const apiUrlAI = process.env.NEXT_PUBLIC_API_URL_PREFIX_AI || '';
 
   useEffect(() => {
     // ローカルストレージからuser_idを取得
@@ -87,7 +88,7 @@ const VideoHubComponent = () => {
     try {
       // まずはおすすめ動画のIDリストを取得
       //ローカルだとhttp://localhost:5001/
-      const response = await fetch(`${apiUrl}/videos/recommendations/user_${storedUserId}`, {
+      const response = await fetch(`${apiUrlAI}/videos/recommendations/user_${storedUserId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
