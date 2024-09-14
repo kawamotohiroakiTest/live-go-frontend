@@ -9,7 +9,7 @@ const fetchVideos = async (apiUrl: string): Promise<any[]> => {
       throw new Error('Failed to fetch videos');
     }
     const data = await response.json();
-    return data.slice(0, 20);
+    return data.slice(0, 10);
   } catch (error) {
     console.error('Error fetching videos:', error);
     throw error;
