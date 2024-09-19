@@ -11,6 +11,10 @@ const ShowVideo = () => {
   const [token, setToken] = useState<string | null>(null); // トークンの状態管理
   const apiUrl = process.env.NEXT_PUBLIC_API_URL_PREFIX || '';
 
+  const handleGoToTop = () => {
+    router.push('/');
+  };
+
   // 動画の詳細を取得
   useEffect(() => {
     if (id) {
@@ -108,30 +112,36 @@ const ShowVideo = () => {
   };
 
   // コメントの削除
-  const handleCommentDelete = async (commentId: number) => {
-    try {
-      if (!token) {
-        console.error('No token found, user is not authenticated');
-        return;
-      }
+// Handle comment deletion
+const handleCommentDelete = async (commentId: number) => {
+  if (!commentId) {
+    console.error('Invalid comment ID');
+    return;
+  }
 
-      const response = await fetch(`${apiUrl}/comments/${commentId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`, // JWTトークンをヘッダーに追加
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('コメントの削除に失敗しました');
-      }
-
-      // ステートからコメントを削除
-      setComments((prevComments) => prevComments.filter((comment) => comment.id !== commentId));
-    } catch (error) {
-      console.error('Error deleting comment:', error);
+  try {
+    if (!token) {
+      console.error('No token found, user is not authenticated');
+      return;
     }
-  };
+
+    const response = await fetch(`${apiUrl}/comments/${commentId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`, // JWTトークンをヘッダーに追加
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('コメントの削除に失敗しました');
+    }
+
+    // Remove the comment from the state
+    setComments((prevComments) => prevComments.filter((comment) => comment.id !== commentId));
+  } catch (error) {
+    console.error('Error deleting comment:', error);
+  }
+};
 
   if (error) {
     return <p>{error}</p>;
@@ -159,7 +169,6 @@ const ShowVideo = () => {
           <div className="py-2 border-b border-gray-300">
             <h1 className="text-2xl font-semibold">{video.Title}</h1>
             <div className="text-gray-600 text-sm mt-2">
-              <span>{video.ViewCount} 回視聴 • </span>
               <span>{new Date(video.PostedAt).toLocaleDateString()}</span>
             </div>
           </div>
@@ -170,6 +179,18 @@ const ShowVideo = () => {
             <p className="text-gray-700 mt-2">{video.Description}</p>
           </div>
         </div>
+
+        {/* TOPページへのリンク */}
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={handleGoToTop}
+            className="w-full bg-gray-500 py-2 rounded-md hover:bg-gray-600 transition duration-200"
+          >
+            TOPへ戻る
+          </button>
+        </div>
+
       </div>
 
       {/* Comments Section */}
@@ -205,7 +226,7 @@ const ShowVideo = () => {
                   <p className="font-semibold">{comment.username || '匿名ユーザー'}</p>
                   <p className="text-gray-600">{comment.Content}</p>
                 </div>
-                {token && ( // トークンが存在する場合のみ削除ボタンを表示
+                {token && comment.id && ( // トークンとコメントIDが存在する場合のみ削除ボタンを表示
                   <button
                     onClick={() => handleCommentDelete(comment.id)}
                     className="text-red-500 hover:text-red-700"
