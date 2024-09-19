@@ -60,7 +60,7 @@ const Home = () => {
           <>
             <p className="mb-2">
               <Link href="/videoupload/upload" className="text-blue-500 hover:underline">
-                画像アップロードページへ
+                動画アップロードページへ
               </Link>
             </p>
             <p className="mb-2">

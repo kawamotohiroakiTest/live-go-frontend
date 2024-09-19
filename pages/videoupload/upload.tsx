@@ -16,34 +16,34 @@ const Upload = () => {
   const [isUploading, setIsUploading] = useState(false);  // アップロード中の状態を管理
   const router = useRouter();
 
+  // 認証トークンの確認
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
-      router.push('/users/login');
+      router.push('/users/login'); // トークンがなければログインページへリダイレクト
     } else {
-      setLoading(false);
+      setLoading(false); // トークンがある場合はロードを解除
     }
   }, [router]);
 
+  // ファイル変更ハンドラー
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files ? e.target.files[0] : null;
-    setFile(selectedFile);
     setFile(selectedFile);
     if (selectedFile) {
       setFileError(null);  // ファイル選択でエラー解除
     }
   };
 
-
+  // タイトル変更ハンドラー
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
     setTitle(e.target.value);
     if (e.target.value) {
       setTitleError(null);  // タイトル入力でエラー解除
     }
-
   };
 
+  // 説明変更ハンドラー
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setDescription(e.target.value);
     if (e.target.value) {
@@ -51,6 +51,7 @@ const Upload = () => {
     }
   };
 
+  // ジャンル変更ハンドラー
   const handleGenreChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setGenre(e.target.value); // ジャンルの状態を更新
     if (e.target.value) {
@@ -58,9 +59,11 @@ const Upload = () => {
     }
   };
 
+  // アップロード処理
   const handleUpload = async () => {
     let hasError = false;
 
+    // バリデーション
     if (!title) {
       setTitleError('タイトルを入力してください');
       hasError = true;
@@ -78,14 +81,13 @@ const Upload = () => {
       hasError = true;
     }
 
-    if (!file) {
-      setError('動画ファイルを選択してください。');
-      return;
+    if (hasError) {
+      return; // バリデーションエラーがあればアップロードを中断
     }
 
     setIsUploading(true);  // アップロード開始
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('file', file as Blob); // fileは必ず存在するため as Blob で型付け
     formData.append('title', title);
     formData.append('description', description);
     formData.append('genre', genre);
@@ -94,10 +96,11 @@ const Upload = () => {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL_PREFIX || '';
       const token = localStorage.getItem('token');
 
+      // API リクエスト
       const response = await fetch(`${apiUrl}/videoupload/upload`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`, // AuthorizationヘッダーにJWTトークンを含める
         },
         body: formData,
       });
@@ -132,7 +135,9 @@ const Upload = () => {
         <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">ファイルアップロード</h1>
 
         {message && <p style={{ color: 'green' }}>{message}</p>}
+        {error && <p style={{ color: 'red' }}>{error}</p>} {/* エラー表示を追加 */}
 
+        {/* タイトル入力フィールド */}
         <div className="mb-4">
           <input
             type="text"
@@ -144,6 +149,7 @@ const Upload = () => {
           {titleError && <p style={{ color: 'red' }}>{titleError}</p>}
         </div>
 
+        {/* 説明入力フィールド */}
         <div className="mb-4">
           <textarea
             placeholder="説明を入力してください"
@@ -154,6 +160,7 @@ const Upload = () => {
           {descriptionError && <p style={{ color: 'red' }}>{descriptionError}</p>}
         </div>
 
+        {/* ジャンル選択 */}
         <div className="mb-4">
           <label className="block mb-2 font-semibold text-gray-700">ジャンルを選択</label>
           <select
@@ -177,6 +184,7 @@ const Upload = () => {
           {genreError && <p style={{ color: 'red' }}>{genreError}</p>}
         </div>
 
+        {/* ファイル選択 */}
         <div className="mb-4">
           <label className="block mb-2 font-semibold text-gray-700">動画ファイルを選択</label>
           <input
@@ -188,7 +196,7 @@ const Upload = () => {
           {fileError && <p style={{ color: 'red' }}>{fileError}</p>}
         </div>
 
-
+        {/* アップロードボタン */}
         <div>
           <button
             type="button"
@@ -200,6 +208,7 @@ const Upload = () => {
           </button>
         </div>
 
+        {/* TOPページへのリンク */}
         <div className="mt-4">
           <button
             type="button"

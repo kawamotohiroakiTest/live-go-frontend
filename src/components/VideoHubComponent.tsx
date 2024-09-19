@@ -83,7 +83,7 @@ const VideoHubComponent = () => {
 
   const fetchRecommendations = async () => {
     const storedUserId = localStorage.getItem('user_id');
-  
+
     try {
       // まずはおすすめ動画のIDリストを取得
       //ローカルだとhttp://localhost:5001/
@@ -94,11 +94,11 @@ const VideoHubComponent = () => {
         },
       });
       console.log("Response:", response);
-  
+
       if (response.ok) {
         const data: { itemId: string }[] = await response.json();
         const videoIds = data.map((item) => item.itemId);
-  
+
         // 次に、そのIDリストに基づいて動画情報を取得
         const videoResponse = await fetch(`${apiUrl}/videos/get_videos_by_ids`, {
           method: 'POST',
@@ -107,7 +107,7 @@ const VideoHubComponent = () => {
           },
           body: JSON.stringify({ videoIds }),
         });
-  
+
         if (videoResponse.ok) {
           const videoData = await videoResponse.json();
           console.log(videoData); // パースされた動画情報を出力
@@ -147,7 +147,11 @@ const VideoHubComponent = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {videos.map((video, index) => (
                 <div key={index} className="block bg-gray-100 p-4 rounded-lg shadow hover:bg-gray-200">
-                  <h2 className="text-lg font-semibold text-gray-800">{video.Title}</h2>
+                  <h2 className="text-lg font-semibold text-gray-800">
+                    <Link href={`/videos/${video.ID}`}>
+                      {video.Title}
+                    </Link>
+                  </h2>
                   <p className="text-gray-600">{video.Description}</p>
                   {video.Files && video.Files[0] && (
                     <video
@@ -180,7 +184,11 @@ const VideoHubComponent = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {recommendations.map((video, index) => (
                   <div key={index} className="block bg-gray-100 p-4 rounded-lg shadow hover:bg-gray-200">
-                    <h2 className="text-lg font-semibold text-gray-800">{video.Title}</h2>
+                    <h2 className="text-lg font-semibold text-gray-800">
+                      <Link href={`/videos/${video.ID}`}>
+                        {video.Title}
+                      </Link>
+                    </h2>
                     <p className="text-gray-600">{video.Description}</p>
                     {video.Files && video.Files[0] && (
                       <video
