@@ -11,7 +11,7 @@ const ShowVideo = () => {
   const [token, setToken] = useState<string | null>(null); // トークンの状態管理
   const apiUrl = process.env.NEXT_PUBLIC_API_URL_PREFIX || '';
 
-  // Fetch video details
+  // 動画の詳細を取得
   useEffect(() => {
     if (id) {
       const fetchVideo = async () => {
@@ -30,53 +30,40 @@ const ShowVideo = () => {
     }
   }, [id]);
 
-// Fetch comments for the video
-useEffect(() => {
-  if (id) {
-    const fetchComments = async () => {
-      try {
-        const token = localStorage.getItem('token'); // トークンを取得
+  // コメントの取得（認証なし）
+  useEffect(() => {
+    if (id) {
+      const fetchComments = async () => {
+        try {
+          const response = await fetch(`${apiUrl}/videos/${id}/comments`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
 
-        if (!token) {
-          console.error('No token found, user is not authenticated');
-          return;
+          if (!response.ok) {
+            throw new Error('コメントの取得に失敗しました');
+          }
+
+          const data = await response.json();
+          setComments(data);
+        } catch (error) {
+          setError('コメントの取得に失敗しました');
         }
-
-        const response = await fetch(`${apiUrl}/videos/${id}/comments`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`, // トークンを送信
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('コメントの取得に失敗しました');
-        }
-
-        const data = await response.json();
-        setComments(data);
-      } catch (error) {
-        setError('コメントの取得に失敗しました');
-      }
-    };
-    fetchComments();
-  }
-}, [id]);
-
+      };
+      fetchComments();
+    }
+  }, [id]);
 
   // JWTトークンを取得してセットする
   useEffect(() => {
     const token = localStorage.getItem('token');
     setToken(token); // トークンを状態として保存
     console.log('Stored JWT token:', token); // トークンをコンソールに表示して確認
-    if (!token) {
-      router.push('/users/login'); // トークンがない場合はログインページにリダイレクト
-    }
   }, [router]);
-  
 
-  // Handle new comment submission
+  // 新しいコメントの送信
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newComment) return;
@@ -114,13 +101,13 @@ useEffect(() => {
 
       const newCommentData = await response.json();
       setComments((prevComments) => [...prevComments, newCommentData]);
-      setNewComment(''); // Clear the input field after successful submission
+      setNewComment(''); // 送信後に入力フィールドをクリア
     } catch (error) {
       console.error('Error submitting comment:', error);
     }
   };
 
-  // Handle comment deletion
+  // コメントの削除
   const handleCommentDelete = async (commentId: number) => {
     try {
       if (!token) {
@@ -139,7 +126,7 @@ useEffect(() => {
         throw new Error('コメントの削除に失敗しました');
       }
 
-      // Remove the comment from the state
+      // ステートからコメントを削除
       setComments((prevComments) => prevComments.filter((comment) => comment.id !== commentId));
     } catch (error) {
       console.error('Error deleting comment:', error);
@@ -183,8 +170,8 @@ useEffect(() => {
             <p className="text-gray-700 mt-2">{video.Description}</p>
           </div>
         </div>
-
       </div>
+
       {/* Comments Section */}
       <div className="bg-white p-4 w-full max-w-2xl">
         <h2 className="text-lg font-semibold">コメント</h2>
