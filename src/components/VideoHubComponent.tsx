@@ -4,7 +4,6 @@ import Link from 'next/link';
 const fetchVideos = async (apiUrl: string): Promise<any[]> => {
   try {
     const response = await fetch(`${apiUrl}/videos/list`);
-    console.log("fetchvideoResponse:", response);
     if (!response.ok) {
       throw new Error('Failed to fetch videos');
     }
@@ -23,6 +22,7 @@ const VideoHubComponent = () => {
   const [recommendations, setRecommendations] = useState<any[]>([]);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL_PREFIX || '';
+  const apiUrlAI = process.env.NEXT_PUBLIC_API_URL_PREFIX_AI || '';
 
   useEffect(() => {
     // ローカルストレージからuser_idを取得
@@ -35,7 +35,6 @@ const VideoHubComponent = () => {
 
     fetchVideos(apiUrl)
       .then((videos) => {
-        console.log("Fetched videos:", videos);
         setVideos(videos);
         setError(null);
       })
@@ -58,9 +57,6 @@ const VideoHubComponent = () => {
       event_type: 'play',
       event_value: null,
     };
-
-    // 送信するデータをログに出力
-    console.log("Sending payload:", payload);
 
     try {
       const response = await fetch(`${apiUrl}/videos/create_user_video_interactions`, {
@@ -85,21 +81,19 @@ const VideoHubComponent = () => {
     const storedUserId = localStorage.getItem('user_id');
 
     try {
-      // まずはおすすめ動画のIDリストを取得
-      //ローカルだとhttp://localhost:5001/
-      const response = await fetch(`${apiUrl}/videos/recommendations/user_${storedUserId}`, {
+      // おすすめ動画のIDリストを取得
+      const response = await fetch(`${apiUrlAI}/videos/recommendations/user_${storedUserId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
-      console.log("Response:", response);
+
+      const data = await response.json();
 
       if (response.ok) {
-        const data: { itemId: string }[] = await response.json();
-        const videoIds = data.map((item) => item.itemId);
+        const videoIds = data.map((item: { itemId: string }) => item.itemId);
 
-        // 次に、そのIDリストに基づいて動画情報を取得
         const videoResponse = await fetch(`${apiUrl}/videos/get_videos_by_ids`, {
           method: 'POST',
           headers: {
@@ -110,14 +104,13 @@ const VideoHubComponent = () => {
 
         if (videoResponse.ok) {
           const videoData = await videoResponse.json();
-          console.log(videoData); // パースされた動画情報を出力
-          setRecommendations(videoData); // 動画情報を保存
+          console.log(videoData);
+          setRecommendations(videoData);
         } else {
-          const videoData = await videoResponse.json();
-          setError(videoData.message || 'Failed to fetch videos. Please try again.');
+          const videoErrorData = await videoResponse.json();
+          setError(videoErrorData.message || 'Failed to fetch videos. Please try again.');
         }
       } else {
-        const data = await response.json();
         setError(data.message || 'Failed to fetch recommendations. Please try again.');
       }
     } catch (err) {
