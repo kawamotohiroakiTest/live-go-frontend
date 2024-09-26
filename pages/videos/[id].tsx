@@ -1,5 +1,4 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
 const ShowVideo = () => {
@@ -12,6 +11,44 @@ const ShowVideo = () => {
   const [token, setToken] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const apiUrl = process.env.NEXT_PUBLIC_API_URL_PREFIX || '';
+  const apiUrlVideoHub = process.env.NEXT_PUBLIC_API_URL_PREFIX_VIDEOHUB || '';
+  const websocket = process.env.NEXT_PUBLIC_API_URL_PREFIX_WEBSOCKET || '';
+  const [ws, setWs] = useState<WebSocket | null>(null);
+
+  // WebSocket接続の初期化
+  useEffect(() => {
+    if (!id) return;
+
+    const socket = new WebSocket(`${websocket}/ws?video_id=${id}`); // WebSocketサーバーのアドレスとパラメータ
+    setWs(socket);
+
+    socket.onerror = (error) => {
+      console.error('WebSocket error:', error);
+  };
+
+  socket.onclose = () => {
+      console.log('WebSocket connection closed');
+  };
+
+    socket.onmessage = (event) => {
+      const messageData = JSON.parse(event.data);
+      if (messageData.type === 'new_comment') {
+        setComments((prevComments) => [...prevComments, messageData.comment]);
+      }
+    };
+
+    socket.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
+
+    socket.onclose = () => {
+      console.log('WebSocket connection closed');
+    };
+
+    return () => {
+      socket.close();
+    };
+  }, [id]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -31,11 +68,12 @@ const ShowVideo = () => {
     if (id) {
       const fetchVideo = async () => {
         try {
-          const response = await fetch(`${apiUrl}/videos/${id}`);
+          const response = await fetch(`${apiUrlVideoHub}/videos/${id}`);
           if (!response.ok) {
             throw new Error('動画の取得に失敗しました');
           }
           const data = await response.json();
+          console.log(data);
           setVideo(data);
         } catch (error) {
           setError('動画の取得に失敗しました');
@@ -106,8 +144,12 @@ const ShowVideo = () => {
       }
 
       const newCommentData = await response.json();
-      setComments((prevComments) => [...prevComments, newCommentData]);
       setNewComment('');
+
+      // 新しいコメントをWebSocket経由で他のユーザーに送信
+      if (ws) {
+        ws.send(JSON.stringify({ type: 'new_comment', comment: newCommentData }));
+      }
     } catch (error) {
       console.error('Error submitting comment:', error);
     }
