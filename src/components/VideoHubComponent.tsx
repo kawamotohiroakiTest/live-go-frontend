@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 
-const fetchVideos = async (apiUrl: string): Promise<any[]> => {
+const fetchVideos = async (apiUrlVideoHub: string): Promise<any[]> => {
   try {
-    const response = await fetch(`${apiUrl}/videos/list`);
+    const response = await fetch(`${apiUrlVideoHub}/videos/list`);
     if (!response.ok) {
       throw new Error('Failed to fetch videos');
     }
@@ -22,6 +22,7 @@ const VideoHubComponent = () => {
   const [recommendations, setRecommendations] = useState<any[]>([]);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL_PREFIX || '';
+  const apiUrlVideoHub = process.env.NEXT_PUBLIC_API_URL_PREFIX_VIDEOHUB || '';
   const apiUrlAI = process.env.NEXT_PUBLIC_API_URL_PREFIX_AI || '';
 
   useEffect(() => {
@@ -33,7 +34,7 @@ const VideoHubComponent = () => {
       setError('ユーザーがログインしていません');
     }
 
-    fetchVideos(apiUrl)
+    fetchVideos(apiUrlVideoHub)
       .then((videos) => {
         setVideos(videos);
         setError(null);

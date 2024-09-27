@@ -1,5 +1,4 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
 const ShowVideo = () => {
@@ -12,6 +11,56 @@ const ShowVideo = () => {
   const [token, setToken] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const apiUrl = process.env.NEXT_PUBLIC_API_URL_PREFIX || '';
+  const apiUrlVideoHub = process.env.NEXT_PUBLIC_API_URL_PREFIX_VIDEOHUB || '';
+  const websocket = process.env.NEXT_PUBLIC_API_URL_PREFIX_WEBSOCKET || '';
+  const [ws, setWs] = useState<WebSocket | null>(null);
+
+  // WebSocket接続の初期化
+  useEffect(() => {
+    if (!id) return;
+
+    const socket = new WebSocket(`${websocket}/ws?video_id=${id}`); // WebSocketサーバーのアドレスとパラメータ
+    setWs(socket);
+
+    socket.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
+
+    socket.onclose = () => {
+      console.log('WebSocket connection closed');
+    };
+
+    socket.onmessage = (event) => {
+      const messageData = JSON.parse(event.data);
+      console.log('WebSocket message received:', messageData);
+
+      if (messageData.type === 'new_comment') {
+        // 新しいコメントを既存の形式に合わせる
+        const newComment = {
+          content: messageData.comment.Content,  // 大文字小文字に注意
+          id: messageData.comment.ID,
+          user_id: messageData.comment.UserID,
+          video_id: messageData.comment.VideoID,
+        };
+
+        // コメントリストに追加
+        setComments((prevComments) => [...prevComments, newComment]);
+      }
+    };
+
+    socket.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
+
+    socket.onclose = () => {
+      console.log('WebSocket connection closed');
+    };
+
+    return () => {
+      socket.close();
+    };
+  }, [id]);
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -31,12 +80,14 @@ const ShowVideo = () => {
     if (id) {
       const fetchVideo = async () => {
         try {
-          const response = await fetch(`${apiUrl}/videos/${id}`);
+          const response = await fetch(`${apiUrlVideoHub}/videos/${id}`);
           if (!response.ok) {
             throw new Error('動画の取得に失敗しました');
           }
           const data = await response.json();
+          console.log(data.comments);
           setVideo(data);
+          setComments(data.comments);
         } catch (error) {
           setError('動画の取得に失敗しました');
         }
@@ -45,30 +96,30 @@ const ShowVideo = () => {
     }
   }, [id]);
 
-  useEffect(() => {
-    if (id) {
-      const fetchComments = async () => {
-        try {
-          const response = await fetch(`${apiUrl}/videos/${id}/comments`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
+  // useEffect(() => {
+  //   if (id) {
+  //     const fetchComments = async () => {
+  //       try {
+  //         const response = await fetch(`${apiUrl}/videos/${id}/comments`, {
+  //           method: 'GET',
+  //           headers: {
+  //             'Content-Type': 'application/json',
+  //           },
+  //         });
 
-          if (!response.ok) {
-            throw new Error('コメントの取得に失敗しました');
-          }
+  //         if (!response.ok) {
+  //           throw new Error('コメントの取得に失敗しました');
+  //         }
 
-          const data = await response.json();
-          setComments(data);
-        } catch (error) {
-          setError('コメントの取得に失敗しました');
-        }
-      };
-      fetchComments();
-    }
-  }, [id]);
+  //         const data = await response.json();
+  //         setComments(data);
+  //       } catch (error) {
+  //         setError('コメントの取得に失敗しました');
+  //       }
+  //     };
+  //     fetchComments();
+  //   }
+  // }, [id]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -106,8 +157,12 @@ const ShowVideo = () => {
       }
 
       const newCommentData = await response.json();
-      setComments((prevComments) => [...prevComments, newCommentData]);
       setNewComment('');
+
+      // 新しいコメントをWebSocket経由で他のユーザーに送信
+      if (ws) {
+        ws.send(JSON.stringify({ type: 'new_comment', comment: newCommentData }));
+      }
     } catch (error) {
       console.error('Error submitting comment:', error);
     }
@@ -210,28 +265,21 @@ const ShowVideo = () => {
                 <p>コメントを投稿するにはログインが必要です。</p>
               )}
 
-              <div className="mt-4 space-y-4">
-                {comments.length > 0 ? (
-                  comments.map((comment, index) => (
-                    <div key={comment.id || index} className="p-4 bg-white rounded-lg flex justify-between">
-                      <div>
-                        <p className="font-semibold">{comment.username || '匿名ユーザー'}</p>
-                        <p className="text-gray-600">{comment.Content}</p>
+                <div className="mt-4 space-y-4">
+                  {comments.length > 0 ? (
+                    comments.map((comment, index) => (
+                      <div key={comment.id || index} className="p-4 bg-white rounded-lg flex justify-between">
+                        <div>
+                          <p className="font-semibold">ユーザーID: {comment.user_id || '匿名ユーザー'}</p>
+                          <p className="text-gray-600">{comment.content}</p>
+                        </div>
                       </div>
-                      {token && comment.id && (
-                        <button
-                          onClick={() => handleCommentDelete(comment.id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          削除
-                        </button>
-                      )}
-                    </div>
-                  ))
-                ) : (
-                  <p>コメントがありません。</p>
-                )}
-              </div>
+                    ))
+                  ) : (
+                    <p>コメントがありません。</p>
+                  )}
+                </div>
+
             </div>
           </div>
         </div>
@@ -299,23 +347,14 @@ const ShowVideo = () => {
               ) : (
                 <p>コメントを投稿するにはログインが必要です。</p>
               )}
-
               <div className="mt-4 space-y-4">
                 {comments.length > 0 ? (
                   comments.map((comment, index) => (
                     <div key={comment.id || index} className="p-4 bg-white rounded-lg flex justify-between">
                       <div>
-                        <p className="font-semibold">{comment.username || '匿名ユーザー'}</p>
-                        <p className="text-gray-600">{comment.Content}</p>
+                        <p className="font-semibold">ユーザーID: {comment.user_id || '匿名ユーザー'}</p>
+                        <p className="text-gray-600">{comment.content}</p> {/* 修正部分 */}
                       </div>
-                      {token && comment.id && (
-                        <button
-                          onClick={() => handleCommentDelete(comment.id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          削除
-                        </button>
-                      )}
                     </div>
                   ))
                 ) : (
