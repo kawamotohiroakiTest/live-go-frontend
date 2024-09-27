@@ -24,16 +24,27 @@ const ShowVideo = () => {
 
     socket.onerror = (error) => {
       console.error('WebSocket error:', error);
-  };
+    };
 
-  socket.onclose = () => {
+    socket.onclose = () => {
       console.log('WebSocket connection closed');
-  };
+    };
 
     socket.onmessage = (event) => {
       const messageData = JSON.parse(event.data);
+      console.log('WebSocket message received:', messageData);
+
       if (messageData.type === 'new_comment') {
-        setComments((prevComments) => [...prevComments, messageData.comment]);
+        // 新しいコメントを既存の形式に合わせる
+        const newComment = {
+          content: messageData.comment.Content,  // 大文字小文字に注意
+          id: messageData.comment.ID,
+          user_id: messageData.comment.UserID,
+          video_id: messageData.comment.VideoID,
+        };
+
+        // コメントリストに追加
+        setComments((prevComments) => [...prevComments, newComment]);
       }
     };
 
@@ -49,6 +60,7 @@ const ShowVideo = () => {
       socket.close();
     };
   }, [id]);
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -73,8 +85,9 @@ const ShowVideo = () => {
             throw new Error('動画の取得に失敗しました');
           }
           const data = await response.json();
-          console.log(data);
+          console.log(data.comments);
           setVideo(data);
+          setComments(data.comments);
         } catch (error) {
           setError('動画の取得に失敗しました');
         }
@@ -252,28 +265,21 @@ const ShowVideo = () => {
                 <p>コメントを投稿するにはログインが必要です。</p>
               )}
 
-              <div className="mt-4 space-y-4">
-                {comments.length > 0 ? (
-                  comments.map((comment, index) => (
-                    <div key={comment.id || index} className="p-4 bg-white rounded-lg flex justify-between">
-                      <div>
-                        <p className="font-semibold">{comment.username || '匿名ユーザー'}</p>
-                        <p className="text-gray-600">{comment.Content}</p>
+                <div className="mt-4 space-y-4">
+                  {comments.length > 0 ? (
+                    comments.map((comment, index) => (
+                      <div key={comment.id || index} className="p-4 bg-white rounded-lg flex justify-between">
+                        <div>
+                          <p className="font-semibold">ユーザーID: {comment.user_id || '匿名ユーザー'}</p>
+                          <p className="text-gray-600">{comment.content}</p>
+                        </div>
                       </div>
-                      {token && comment.id && (
-                        <button
-                          onClick={() => handleCommentDelete(comment.id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          削除
-                        </button>
-                      )}
-                    </div>
-                  ))
-                ) : (
-                  <p>コメントがありません。</p>
-                )}
-              </div>
+                    ))
+                  ) : (
+                    <p>コメントがありません。</p>
+                  )}
+                </div>
+
             </div>
           </div>
         </div>
@@ -341,23 +347,14 @@ const ShowVideo = () => {
               ) : (
                 <p>コメントを投稿するにはログインが必要です。</p>
               )}
-
               <div className="mt-4 space-y-4">
                 {comments.length > 0 ? (
                   comments.map((comment, index) => (
                     <div key={comment.id || index} className="p-4 bg-white rounded-lg flex justify-between">
                       <div>
-                        <p className="font-semibold">{comment.username || '匿名ユーザー'}</p>
-                        <p className="text-gray-600">{comment.Content}</p>
+                        <p className="font-semibold">ユーザーID: {comment.user_id || '匿名ユーザー'}</p>
+                        <p className="text-gray-600">{comment.content}</p> {/* 修正部分 */}
                       </div>
-                      {token && comment.id && (
-                        <button
-                          onClick={() => handleCommentDelete(comment.id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          削除
-                        </button>
-                      )}
                     </div>
                   ))
                 ) : (
