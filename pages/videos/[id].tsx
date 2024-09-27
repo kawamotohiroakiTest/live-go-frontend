@@ -83,30 +83,30 @@ const ShowVideo = () => {
     }
   }, [id]);
 
-  useEffect(() => {
-    if (id) {
-      const fetchComments = async () => {
-        try {
-          const response = await fetch(`${apiUrl}/videos/${id}/comments`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
+  // useEffect(() => {
+  //   if (id) {
+  //     const fetchComments = async () => {
+  //       try {
+  //         const response = await fetch(`${apiUrl}/videos/${id}/comments`, {
+  //           method: 'GET',
+  //           headers: {
+  //             'Content-Type': 'application/json',
+  //           },
+  //         });
 
-          if (!response.ok) {
-            throw new Error('コメントの取得に失敗しました');
-          }
+  //         if (!response.ok) {
+  //           throw new Error('コメントの取得に失敗しました');
+  //         }
 
-          const data = await response.json();
-          setComments(data);
-        } catch (error) {
-          setError('コメントの取得に失敗しました');
-        }
-      };
-      fetchComments();
-    }
-  }, [id]);
+  //         const data = await response.json();
+  //         setComments(data);
+  //       } catch (error) {
+  //         setError('コメントの取得に失敗しました');
+  //       }
+  //     };
+  //     fetchComments();
+  //   }
+  // }, [id]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
