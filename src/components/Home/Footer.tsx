@@ -1,6 +1,5 @@
 import React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 
 interface FooterProps {
   isLoggedIn: boolean;
@@ -9,8 +8,6 @@ interface FooterProps {
 }
 
 const Footer: React.FC<FooterProps> = ({ isLoggedIn, error, handleLogout }) => {
-  const router = useRouter();
-
   return (
     <footer className="mt-auto p-4 bg-gray-200 text-center">
       {!isLoggedIn ? (
