@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
+import VideoList from './VideoList';
+import Recommendations from './Recommendations';
 
 const fetchVideos = async (apiUrlVideoHub: string): Promise<any[]> => {
   try {
@@ -26,7 +27,6 @@ const VideoHubComponent = () => {
   const apiUrlAI = process.env.NEXT_PUBLIC_API_URL_PREFIX_AI || '';
 
   useEffect(() => {
-    // ローカルストレージからuser_idを取得
     const storedUserId = localStorage.getItem('user_id');
     if (storedUserId) {
       setUserId(storedUserId);
@@ -45,7 +45,6 @@ const VideoHubComponent = () => {
       });
   }, [apiUrl]);
 
-  // 動画が再生された時に呼ばれる関数
   const handlePlay = async (videoId: string) => {
     if (!userId) {
       console.log('ユーザーIDがありません');
@@ -82,7 +81,6 @@ const VideoHubComponent = () => {
     const storedUserId = localStorage.getItem('user_id');
 
     try {
-      // おすすめ動画のIDリストを取得
       const response = await fetch(`${apiUrlAI}/videos/recommendations/user_${storedUserId}`, {
         method: 'GET',
         headers: {
@@ -131,35 +129,9 @@ const VideoHubComponent = () => {
           {videos.length === 0 ? (
             <div className="text-center">
               <p className="text-gray-700">動画がアップロードされていません。</p>
-              <Link href="/videoupload/upload">
-                <span className="mt-4 inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 cursor-pointer">
-                  動画をアップロードする
-                </span>
-              </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {videos.map((video, index) => (
-                <div key={index} className="block bg-gray-100 p-4 rounded-lg shadow hover:bg-gray-200">
-                  <h2 className="text-lg font-semibold text-gray-800">
-                    <Link href={`/videos/${video.ID}`}>
-                      {video.Title}
-                    </Link>
-                  </h2>
-                  <p className="text-gray-600">{video.Description}</p>
-                  {video.Files && video.Files[0] && (
-                    <video
-                      controls
-                      className="mt-2 w-full rounded-lg"
-                      onPlay={() => handlePlay(video.ID)}
-                    >
-                      <source src={video.Files[0].FilePath} type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
-                  )}
-                </div>
-              ))}
-            </div>
+            <VideoList videos={videos} handlePlay={handlePlay} />
           )}
 
           <div className="mt-4">
@@ -167,37 +139,12 @@ const VideoHubComponent = () => {
               onClick={fetchRecommendations}
               className="bg-yellow-500 text-white font-bold py-2 px-4 rounded-full border border-yellow-600 shadow-lg hover:bg-yellow-600 hover:border-yellow-700 transition duration-300"
             >
-              あなたへのおすすめ動画
+              AIレコメンド動画
             </button>
           </div>
 
-          {/* おすすめ動画の表示 */}
           {recommendations.length > 0 && (
-            <div className="mt-8">
-              <h2 className="text-xl font-bold text-gray-700 mb-4">あなたへのおすすめ動画</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {recommendations.map((video, index) => (
-                  <div key={index} className="block bg-gray-100 p-4 rounded-lg shadow hover:bg-gray-200">
-                    <h2 className="text-lg font-semibold text-gray-800">
-                      <Link href={`/videos/${video.ID}`}>
-                        {video.Title}
-                      </Link>
-                    </h2>
-                    <p className="text-gray-600">{video.Description}</p>
-                    {video.Files && video.Files[0] && (
-                      <video
-                        controls
-                        className="mt-2 w-full rounded-lg"
-                        onPlay={() => handlePlay(video.ID)}
-                      >
-                        <source src={video.Files[0].FilePath} type="video/mp4" />
-                        Your browser does not support the video tag.
-                      </video>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
+            <Recommendations recommendations={recommendations} handlePlay={handlePlay} />
           )}
         </header>
       </div>
