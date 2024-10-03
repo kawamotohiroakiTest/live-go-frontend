@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Search from './SearchComponent';
 
 const fetchVideos = async (apiUrlVideoHub: string): Promise<any[]> => {
   try {
@@ -139,7 +140,7 @@ const VideoHubComponent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center">
+    <div className="min-h-screen bg-white flex justify-center">
       <div className="container mx-auto p-8">
         <header className="text-center mb-8">
           {error && <p className="text-red-500 mt-2">{error}</p>}

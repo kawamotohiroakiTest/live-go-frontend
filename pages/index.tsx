@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import VideoHubComponent from '../src/components/VideoHubComponent';
 import Header from '../src/components/Header';
+import Search from '../src/components/SearchComponent';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
@@ -43,6 +44,7 @@ const Home = () => {
   return (
     <div>
       <Header />
+      <Search />
       <VideoHubComponent />
     </div>
   );
