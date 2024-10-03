@@ -20,6 +20,9 @@ const VideoHubComponent = () => {
   const [error, setError] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [recommendations, setRecommendations] = useState<any[]>([]);
+  const [isOpen, setIsOpen] = useState(false); // 動画リストの開閉状態を管理
+  const [isRotated, setIsRotated] = useState(false); // プラスマークの回転状態を管理
+  const [loading, setLoading] = useState(false);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL_PREFIX || '';
   const apiUrlVideoHub = process.env.NEXT_PUBLIC_API_URL_PREFIX_VIDEOHUB || '';
@@ -79,6 +82,7 @@ const VideoHubComponent = () => {
   };
 
   const fetchRecommendations = async () => {
+    setLoading(true);
     const storedUserId = localStorage.getItem('user_id');
 
     try {
@@ -117,6 +121,20 @@ const VideoHubComponent = () => {
     } catch (err) {
       console.error('Fetch recommendations error:', err);
       setError('Failed to fetch recommendations. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleButtonClick = () => {
+    if (!isOpen) {
+      setIsRotated(true);
+      setLoading(true);
+      setTimeout(() => {
+        setIsOpen(true);
+        setLoading(false);
+        fetchRecommendations();
+      }, 1000);
     }
   };
 
@@ -159,17 +177,31 @@ const VideoHubComponent = () => {
             </div>
           )}
 
-          <div className="mt-8">
+          <div className="mt-8 flex justify-center">
             <button
-              onClick={fetchRecommendations}
-              className="bg-yellow-500 text-white font-bold py-2 px-4 rounded-full border border-yellow-600 shadow-lg hover:bg-yellow-600 hover:border-yellow-700 transition duration-300"
+              onClick={handleButtonClick}
+              className="flex items-center justify-between bg-yellow-500 text-white font-bold py-2 px-4 rounded-lg border border-yellow-600 shadow-lg hover:bg-yellow-600 hover:border-yellow-700 transition duration-300"
             >
-              AIレコメンド動画
+              <span>あなたにピッタリの動画をおすすめします</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                className={`w-6 h-6 ml-2 transition-transform duration-1000 ${isRotated ? 'rotate-90' : ''}`}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 5v14m7-7H5"
+                />
+              </svg>
             </button>
           </div>
 
           {/* おすすめ動画の表示 */}
-          {recommendations.length > 0 && (
+          {isOpen && recommendations.length > 0 && (
             <div className="mt-8">
               <h2 className="text-xl font-bold text-gray-700 mb-4">AIレコメンド動画</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
