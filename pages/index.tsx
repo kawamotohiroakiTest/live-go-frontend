@@ -47,7 +47,7 @@ const Home = () => {
           <>
             <p className="mb-2">
               <Link href="/users/register" className="text-blue-500 hover:underline">
-                登録ページへ
+                登録ページへ！
               </Link>
             </p>
             <p className="mb-2">
