@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import VideoHubComponent from '../src/components/Videohub/VideoHubComponent';
+import VideoHubComponent from '@components/VideoHub/VideoHubComponent';
 import Footer from '../src/components/Home/Footer';
 import { useRouter } from 'next/router';
 
