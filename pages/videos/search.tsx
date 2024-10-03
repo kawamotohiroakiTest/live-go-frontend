@@ -30,7 +30,7 @@ const SearchPage: React.FC = () => {
     const handleSearch = async () => {
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL_PREFIX || '';
-        const response = await fetch(`${apiUrl}/videos/search?query=${encodeURIComponent(query as string)}`);
+        const response = await fetch(`${apiUrl}/videohub/search?query=${encodeURIComponent(query as string)}`);
 
         if (!response.ok) {
           throw new Error('検索に失敗しました');
@@ -70,7 +70,7 @@ const SearchPage: React.FC = () => {
                     {/* 検索結果の表示 */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         {searchResults.map((video, index) => (
-                        <div key={index} className="relative block bg-gray-100 shadow hover:bg-gray-200 p-2">
+                        <div key={index} className="relative block bg-gray-100 shadow hover:bg-gray-200 p-2 text-center">
                             {video.Files && video.Files[0] && (
                             <video
                                 controls
