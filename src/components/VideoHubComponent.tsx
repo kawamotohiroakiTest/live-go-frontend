@@ -155,11 +155,11 @@ const VideoHubComponent = () => {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {videos.map((video, index) => (
-                <div key={index} className="relative block bg-gray-100 p-4 rounded-lg shadow hover:bg-gray-200">
+                <div key={index} className="relative block bg-gray-100 shadow hover:bg-gray-200">
                   {video.Files && video.Files[0] && (
                     <video
                       controls
-                      className="mt-2 w-full h-40 object-cover rounded-lg"
+                      className="w-full h-40 object-cover"
                       onPlay={() => handlePlay(video.ID)}
                     >
                       <source src={video.Files[0].FilePath} type="video/mp4" />
@@ -171,7 +171,7 @@ const VideoHubComponent = () => {
                       {video.Title}
                     </Link>
                   </h2>
-                  <p className="text-gray-600 mt-1">{video.Description}</p>
+                  <p className="text-gray-600 mt-1 mb-4">{video.Description}</p>
                 </div>
               ))}
             </div>
@@ -206,23 +206,24 @@ const VideoHubComponent = () => {
               <h2 className="text-xl font-bold text-gray-700 mb-4">AIレコメンド動画</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {recommendations.map((video, index) => (
-                  <div key={index} className="relative block bg-gray-100 p-4 rounded-lg shadow hover:bg-gray-200">
-                    <h2 className="mt-2 text-lg font-semibold text-gray-800">
-                      <Link href={`/videos/${video.ID}`}>
-                        {video.Title}
-                      </Link>
-                    </h2>
-                    <p className="text-gray-600 mt-1">{video.Description}</p>
+                  <div key={index} className="relative block bg-gray-100 shadow hover:bg-gray-200">
                     {video.Files && video.Files[0] && (
                       <video
                         controls
-                        className="mt-2 w-full h-40 object-cover rounded-lg"
+                        className="w-full h-40 object-cover"
                         onPlay={() => handlePlay(video.ID)}
                       >
                         <source src={video.Files[0].FilePath} type="video/mp4" />
                         Your browser does not support the video tag.
                       </video>
                     )}
+                    <h2 className="mt-2 text-lg font-semibold text-gray-800">
+                      <Link href={`/videos/${video.ID}`}>
+                        {video.Title}
+                      </Link>
+                    </h2>
+                    <p className="text-gray-600 mt-1 mb-4">{video.Description}</p>
+
                   </div>
                 ))}
               </div>
