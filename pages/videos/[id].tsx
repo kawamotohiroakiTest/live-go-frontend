@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import Header from '../../src/components/Header';
 
 const ShowVideo = () => {
   const router = useRouter();
@@ -87,7 +88,7 @@ const ShowVideo = () => {
           const data = await response.json();
           console.log(data.comments);
           setVideo(data);
-          setComments(data.comments);
+          setComments(data.comments || []);
         } catch (error) {
           setError('動画の取得に失敗しました');
         }
@@ -202,13 +203,14 @@ const ShowVideo = () => {
 
   return (
     <>
+      <Header />
       {/* PCレイアウト */}
       {!isMobile && (
-        <div className="min-h-screen bg-gradient-to-r from-blue-500 to-teal-500 flex items-center justify-center">
-          <div style={{ width: '80%' }} className="flex flex-col md:flex-row bg-white shadow-lg rounded-lg">
+        <div className="min-h-screen bg-gray-100 flex justify-center">
+          <div style={{ width: '80%' }} className="flex bg-white shadow-lg rounded-lg">
             {/* Video Player */}
             <div style={{ width: '75%' }} className="p-4">
-              <div className="relative w-full h-64 md:h-96 mb-4">
+              <div className="relative w-full h-80 md:h-96 mb-4">
                 {video.Files && video.Files.length > 0 && (
                   <video controls className="w-full h-full object-contain rounded-lg">
                     <source src={video.Files[0].FilePath} type="video/mp4" />
@@ -216,38 +218,32 @@ const ShowVideo = () => {
                   </video>
                 )}
               </div>
-
-              <div>
-                <div className="py-2 border-b border-gray-300">
-                  <h1 className="text-2xl font-semibold">{video.Title}</h1>
-                  <div className="text-gray-600 text-sm mt-2">
-                    <span>{new Date(video.PostedAt).toLocaleDateString()}</span>
-                  </div>
+              <div className="text-left">
+                <h1 className="text-2xl font-semibold">{video.Title}</h1>
+                <div className="text-gray-600 text-sm mt-2">
+                  <span>{new Date(video.PostedAt).toLocaleDateString()}</span>
                 </div>
-
                 <div className="mt-4">
-                  <h2 className="text-lg font-semibold">説明PC</h2>
-                  <p className="text-gray-700 mt-2">{video.Description}</p>
+                  <p className="text-gray-700">{video.Description}</p>
                 </div>
               </div>
-
-              <div className="mt-4">
+              <div className="flex items-center justify-between mt-4 space-x-2">
                 <button
-                  type="button"
-                  onClick={handleGoToTop}
-                  className="w-full bg-gray-500 py-2 rounded-md hover:bg-gray-600 transition duration-200"
-                >
-                  TOPへ戻る
+                    type="button"
+                    onClick={handleGoToTop}
+                    className="w-full py-2 rounded-md transition duration-200"
+                  >
+                    TOPへ戻る
                 </button>
               </div>
             </div>
 
             {/* Comments Section */}
-            <div style={{ width: '25%' }} className="p-4 bg-gray-100">
-              <h2 className="text-lg font-semibold">コメント</h2>
+            <div style={{ width: '25%' }} className="p-4 bg-gray-50 border-l overflow-y-auto">
+              <h2 className="text-lg font-semibold mb-4">コメントリスト</h2>
 
               {token ? (
-                <form onSubmit={handleCommentSubmit} className="mt-4">
+                <form onSubmit={handleCommentSubmit} className="mb-4">
                   <textarea
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
@@ -256,7 +252,7 @@ const ShowVideo = () => {
                   ></textarea>
                   <button
                     type="submit"
-                    className="bg-blue-500 text-white px-4 py-2 mt-2 rounded-lg hover:bg-blue-600"
+                    className="bg-blue-500 text-white px-4 py-2 mt-2 rounded-lg w-full hover:bg-blue-600"
                   >
                     コメントを送信
                   </button>
@@ -265,21 +261,17 @@ const ShowVideo = () => {
                 <p>コメントを投稿するにはログインが必要です。</p>
               )}
 
-                <div className="mt-4 space-y-4">
-                  {comments.length > 0 ? (
-                    comments.map((comment, index) => (
-                      <div key={comment.id || index} className="p-4 bg-white rounded-lg flex justify-between">
-                        <div>
-                          <p className="font-semibold">ユーザーID: {comment.user_id || '匿名ユーザー'}</p>
-                          <p className="text-gray-600">{comment.content}</p>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <p>コメントがありません。</p>
-                  )}
-                </div>
-
+              <div className="mt-4 space-y-4 overflow-y-auto h-64">
+                {comments.length > 0 ? (
+                  comments.map((comment, index) => (
+                    <div key={index} className="p-4 bg-white rounded-lg shadow-sm">
+                      <p className="text-gray-600 text-sm">{comment.user_id || '匿名ユーザー'}　{comment.content}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-600">コメントがありません。</p>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -287,7 +279,7 @@ const ShowVideo = () => {
 
       {/* スマホ用レイアウト */}
       {isMobile && (
-        <div className="min-h-screen bg-gradient-to-r from-blue-500 to-teal-500 flex items-center justify-center">
+        <div className="min-h-screen bg-gradient-to-r to-teal-500 flex items-center justify-center">
           <div style={{ width: '95%' }} className="bg-white shadow-lg rounded-lg">
             {/* Video Player */}
             <div className="p-4">
@@ -317,7 +309,7 @@ const ShowVideo = () => {
                   <button
                     type="button"
                     onClick={handleGoToTop}
-                    className="w-full bg-gray-500 py-2 rounded-md hover:bg-gray-600 transition duration-200"
+                    className="w-full py-2 rounded-md transition duration-200"
                   >
                     TOPへ戻る
                   </button>
@@ -348,12 +340,12 @@ const ShowVideo = () => {
                 <p>コメントを投稿するにはログインが必要です。</p>
               )}
               <div className="mt-4 space-y-4">
-                {comments.length > 0 ? (
+                {(comments && comments.length > 0) ? (
                   comments.map((comment, index) => (
                     <div key={comment.id || index} className="p-4 bg-white rounded-lg flex justify-between">
                       <div>
                         <p className="font-semibold">ユーザーID: {comment.user_id || '匿名ユーザー'}</p>
-                        <p className="text-gray-600">{comment.content}</p> {/* 修正部分 */}
+                        <p className="text-gray-600">{comment.content}</p>
                       </div>
                     </div>
                   ))
@@ -361,6 +353,7 @@ const ShowVideo = () => {
                   <p>コメントがありません。</p>
                 )}
               </div>
+
             </div>
           </div>
         </div>
