@@ -61,7 +61,7 @@ const Header = () => {
                     </svg>
                 </div>
                 <div>
-                    <p className="text-gray-300">動画</p>
+                    <p className="text-gray-300">AIレコメンド動画</p>
                 </div>
             </div>
         </Link>

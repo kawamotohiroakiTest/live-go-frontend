@@ -231,7 +231,7 @@ const ShowVideo = () => {
                 <button
                     type="button"
                     onClick={handleGoToTop}
-                    className="w-full bg-gray-500 py-2 rounded-md hover:bg-gray-600 transition duration-200"
+                    className="w-full py-2 rounded-md transition duration-200"
                   >
                     TOPへ戻る
                 </button>
@@ -309,7 +309,7 @@ const ShowVideo = () => {
                   <button
                     type="button"
                     onClick={handleGoToTop}
-                    className="w-full bg-gray-500 py-2 rounded-md hover:bg-gray-600 transition duration-200"
+                    className="w-full py-2 rounded-md transition duration-200"
                   >
                     TOPへ戻る
                   </button>

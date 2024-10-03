@@ -93,7 +93,7 @@ const Register = () => {
           />
         </div>
 
-        <div>
+        <div className="mt-6">
           <button
             type="submit"
             className="w-full bg-blue-500 py-2 rounded-md hover:bg-blue-600 transition duration-200 z-20 relative"

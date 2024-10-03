@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import Header from '../../src/components/Header';
 
 const Upload = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -130,96 +131,99 @@ const Upload = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-md w-1/2 max-w-lg">
-        <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">ファイルアップロード</h1>
+    <>
+      <Header />
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="bg-white p-8 rounded-lg shadow-md w-1/2 max-w-lg">
+          <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">ファイルアップロード</h1>
 
-        {message && <p style={{ color: 'green' }}>{message}</p>}
-        {error && <p style={{ color: 'red' }}>{error}</p>} {/* エラー表示を追加 */}
+          {message && <p style={{ color: 'green' }}>{message}</p>}
+          {error && <p style={{ color: 'red' }}>{error}</p>} {/* エラー表示を追加 */}
 
-        {/* タイトル入力フィールド */}
-        <div className="mb-4">
-          <input
-            type="text"
-            placeholder="タイトルを入力してください"
-            value={title}
-            onChange={handleTitleChange}
-            className="block w-full p-2 mb-1 border rounded"
-          />
-          {titleError && <p style={{ color: 'red' }}>{titleError}</p>}
-        </div>
+          {/* タイトル入力フィールド */}
+          <div className="mb-4">
+            <input
+              type="text"
+              placeholder="タイトルを入力してください"
+              value={title}
+              onChange={handleTitleChange}
+              className="block w-full p-2 mb-1 border rounded"
+            />
+            {titleError && <p style={{ color: 'red' }}>{titleError}</p>}
+          </div>
 
-        {/* 説明入力フィールド */}
-        <div className="mb-4">
-          <textarea
-            placeholder="説明を入力してください"
-            value={description}
-            onChange={handleDescriptionChange}
-            className="block w-full p-2 mb-1 border rounded"
-          />
-          {descriptionError && <p style={{ color: 'red' }}>{descriptionError}</p>}
-        </div>
+          {/* 説明入力フィールド */}
+          <div className="mb-4">
+            <textarea
+              placeholder="説明を入力してください"
+              value={description}
+              onChange={handleDescriptionChange}
+              className="block w-full p-2 mb-1 border rounded"
+            />
+            {descriptionError && <p style={{ color: 'red' }}>{descriptionError}</p>}
+          </div>
 
-        {/* ジャンル選択 */}
-        <div className="mb-4">
-          <label className="block mb-2 font-semibold text-gray-700">ジャンルを選択</label>
-          <select
-            value={genre}
-            onChange={handleGenreChange}
-            className="block w-full p-2 border rounded"
-          >
-            <option value="">ジャンルを選択</option>
-            <option value="Action">アクション</option>
-            <option value="Comedy">コメディ</option>
-            <option value="Documentary">ドキュメンタリー</option>
-            <option value="Drama">ドラマ</option>
-            <option value="Horror">ホラー</option>
-            <option value="Sci-Fi">SF</option>
-            <option value="Anime">アニメ</option>
-            <option value="Music">音楽</option>
-            <option value="Sports">スポーツ</option>
-            <option value="News">ニュース</option>
-            <option value="Other">その他</option>
-          </select>
-          {genreError && <p style={{ color: 'red' }}>{genreError}</p>}
-        </div>
+          {/* ジャンル選択 */}
+          <div className="mb-4">
+            <label className="block mb-2 font-semibold text-gray-700">ジャンルを選択</label>
+            <select
+              value={genre}
+              onChange={handleGenreChange}
+              className="block w-full p-2 border rounded"
+            >
+              <option value="">ジャンルを選択</option>
+              <option value="Action">アクション</option>
+              <option value="Comedy">コメディ</option>
+              <option value="Documentary">ドキュメンタリー</option>
+              <option value="Drama">ドラマ</option>
+              <option value="Horror">ホラー</option>
+              <option value="Sci-Fi">SF</option>
+              <option value="Anime">アニメ</option>
+              <option value="Music">音楽</option>
+              <option value="Sports">スポーツ</option>
+              <option value="News">ニュース</option>
+              <option value="Other">その他</option>
+            </select>
+            {genreError && <p style={{ color: 'red' }}>{genreError}</p>}
+          </div>
 
-        {/* ファイル選択 */}
-        <div className="mb-4">
-          <label className="block mb-2 font-semibold text-gray-700">動画ファイルを選択</label>
-          <input
-            type="file"
-            onChange={handleFileChange}
-            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-            disabled={isUploading}
-          />
-          {fileError && <p style={{ color: 'red' }}>{fileError}</p>}
-        </div>
+          {/* ファイル選択 */}
+          <div className="mb-4">
+            <label className="block mb-2 font-semibold text-gray-700">動画ファイルを選択</label>
+            <input
+              type="file"
+              onChange={handleFileChange}
+              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              disabled={isUploading}
+            />
+            {fileError && <p style={{ color: 'red' }}>{fileError}</p>}
+          </div>
 
-        {/* アップロードボタン */}
-        <div>
-          <button
-            type="button"
-            onClick={handleUpload}
-            className="w-full bg-blue-500 py-2 rounded-md hover:bg-blue-600 transition duration-200 mb-4"
-            disabled={isUploading}  // アップロード中は無効化
-          >
-            {isUploading ? 'アップロード中...' : 'アップロード'}
-          </button>
-        </div>
+          {/* アップロードボタン */}
+          <div>
+            <button
+              type="button"
+              onClick={handleUpload}
+              className="w-full bg-blue-500 py-2 rounded-md hover:bg-blue-600 transition duration-200 mb-4"
+              disabled={isUploading}  // アップロード中は無効化
+            >
+              {isUploading ? 'アップロード中...' : 'アップロード'}
+            </button>
+          </div>
 
-        {/* TOPページへのリンク */}
-        <div className="mt-4">
-          <button
-            type="button"
-            onClick={handleGoToTop}
-            className="w-full bg-gray-500 py-2 rounded-md hover:bg-gray-600 transition duration-200"
-          >
-            TOPへ戻る
-          </button>
+          {/* TOPページへのリンク */}
+          <div className="mt-4">
+            <button
+              type="button"
+              onClick={handleGoToTop}
+              className="w-full py-2 rounded-md transition duration-200"
+            >
+              TOPへ戻る
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
