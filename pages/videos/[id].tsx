@@ -87,7 +87,7 @@ const ShowVideo = () => {
           const data = await response.json();
           console.log(data.comments);
           setVideo(data);
-          setComments(data.comments);
+          setComments(data.comments || []);
         } catch (error) {
           setError('動画の取得に失敗しました');
         }
@@ -348,12 +348,12 @@ const ShowVideo = () => {
                 <p>コメントを投稿するにはログインが必要です。</p>
               )}
               <div className="mt-4 space-y-4">
-                {comments.length > 0 ? (
+                {(comments && comments.length > 0) ? (
                   comments.map((comment, index) => (
                     <div key={comment.id || index} className="p-4 bg-white rounded-lg flex justify-between">
                       <div>
                         <p className="font-semibold">ユーザーID: {comment.user_id || '匿名ユーザー'}</p>
-                        <p className="text-gray-600">{comment.content}</p> {/* 修正部分 */}
+                        <p className="text-gray-600">{comment.content}</p>
                       </div>
                     </div>
                   ))
@@ -361,6 +361,7 @@ const ShowVideo = () => {
                   <p>コメントがありません。</p>
                 )}
               </div>
+
             </div>
           </div>
         </div>
